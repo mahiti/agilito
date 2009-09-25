@@ -6,7 +6,7 @@ CATEGORY_STORY = 1
 
 def authenticate(username, password):
     try:
-        user = User.objects.filter(username=username)[0]
+        user = User.objects.filter(username = username)[0]
         if user.check_password(password):
             return user
     except IndexError:
@@ -53,7 +53,7 @@ def metaWeblog_newPost(blogid, username, password, struct, publish):
 @public
 def metaWeblog_editPost(postid, username, password, struct, publish):
     user = authenticate(username, password)
-    story = UserStory.objects.filter(id=int(postid))[0]
+    story = UserStory.objects.filter(id = int(postid))[0]
     getProject(user, story.project.id)
 
     story.name = struct['title']
@@ -63,7 +63,7 @@ def metaWeblog_editPost(postid, username, password, struct, publish):
 @public
 def metaWeblog_getPost(postid, username, password):
     user = authenticate(username, password)
-    story = UserStory.objects.filter(id=int(postid))[0]
+    story = UserStory.objects.filter(id = int(postid))[0]
 
     getProject(user, story.project.id)
 
@@ -77,7 +77,7 @@ def metaWeblog_getCategories(blogid, username, password):
 @public
 def metaWeblog_getRecentPosts(blogid, username, password, numberOfPosts):
     user = authenticate(username, password)
-    
+
     projectID, category = blogid.split(':')
 
     if category != 'story':
@@ -86,9 +86,9 @@ def metaWeblog_getRecentPosts(blogid, username, password, numberOfPosts):
     project = getProject(user, projectID)
 
     if numberOfPosts == 0:
-        stories = UserStory.objects.filter(project=project, iteration=None)
+        stories = UserStory.objects.filter(project = project, iteration = None)
     else:
-        stories = UserStory.objects.filter(project=project, iteration=None)[:numberOfPosts] 
+        stories = UserStory.objects.filter(project = project, iteration = None)[:numberOfPosts]
     posts = []
     for story in stories:
         posts.append(story2post(user, story))

@@ -22,7 +22,7 @@ class TaskHierarchy:
 
     def keys(self):
         return [c.id for c in self.children]
-        
+
     def __getitem__(self, id):
         child = ([c for c in filter(lambda x: x.id == id, self.children)] + [None])[0]
         if child is None:
@@ -179,7 +179,7 @@ class HierarchicRadioSelect(forms.RadioSelect):
         self.hierarchy = kwargs.pop('hierarchy', None)
         super(HierarchicRadioSelect, self).__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs = None, choices = ()):
         if value is None: value = ''
         str_value = force_unicode(value) # Normalize to string.
         final_attrs = self.build_attrs(attrs)
@@ -202,10 +202,10 @@ class AutoCompleteTagInput(forms.TextInput):
             '/agilito/jquery-autocomplete/jquery.autocomplete.js'
         )
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs = None):
         output = super(AutoCompleteTagInput, self).render(name, value, attrs)
         page_tags = Tag.objects.usage_for_model(self.__ac_model__)
-        tag_list = simplejson.dumps([tag.name for tag in page_tags], ensure_ascii=False)
+        tag_list = simplejson.dumps([tag.name for tag in page_tags], ensure_ascii = False)
         return output + mark_safe(u'''<script type="text/javascript">
             jQuery("#id_%s").autocomplete(%s, {
                 width: 150,
@@ -257,12 +257,12 @@ class TableSelectMultiple(forms.widgets.SelectMultiple):
         else:
             self.grouper, self.group_label = grouper
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs = None, choices = ()):
         if value is None: value = []
 
         id = attrs['id']
 
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs, name = name)
         output = ['<table id="%s">' % id]
         str_values = set([force_unicode(v) for v in value]) # Normalize to strings.
         parent = None
@@ -280,9 +280,9 @@ class TableSelectMultiple(forms.widgets.SelectMultiple):
                 else:
                     parent = None
                     child = ''
-            
-            final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
-            cb = forms.widgets.CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+
+            final_attrs = dict(final_attrs, id = '%s_%s' % (attrs['id'], i))
+            cb = forms.widgets.CheckboxInput(final_attrs, check_test = lambda value: value in str_values)
             option_value = force_unicode(option_value)
             rendered_cb = cb.render(name, option_value)
             output.append(u'<tr%s><td>%s</td>' % (child, rendered_cb))

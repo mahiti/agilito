@@ -40,7 +40,7 @@ class SeleniumBase(unittest.TestCase):
         if self.do_stop_browser:
             self.browser.stop()
 
-    def login(self, username=None, password=None):
+    def login(self, username = None, password = None):
         b = self.browser
         b.open('/accounts/login/?next=/')
         b.type('id_username', username or self.user.username)

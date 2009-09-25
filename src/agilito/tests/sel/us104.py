@@ -45,13 +45,13 @@ class TestUS104(TestUS49Base):
             b.wait()
         self.assertEqual(last_location, b.get_location())
 
-        self.assertEqual(TestCase.objects.count(), pre[0]+1)
-        self.assertEqual(TestResult.objects.count(), pre[1]+1)
+        self.assertEqual(TestCase.objects.count(), pre[0] + 1)
+        self.assertEqual(TestResult.objects.count(), pre[1] + 1)
 
     def test_add_testcase_andthen_testresult_simple_on_us_view(self):
 
-        test_case = TestCase(name='ABC Test', description='Test', priority=10,
-                             user_story=self.story)
+        test_case = TestCase(name = 'ABC Test', description = 'Test', priority = 10,
+                             user_story = self.story)
         test_case.save()
 
         pre = TestResult.objects.count()
@@ -75,20 +75,20 @@ class TestUS104(TestUS49Base):
         b.wait()
         for x in xrange(15):
             b.wait()
-        self.assertEqual(TestResult.objects.count(), pre+1)
+        self.assertEqual(TestResult.objects.count(), pre + 1)
         self.assertEqual(last_location, b.get_location())
-   
+
         test_case.delete()
 
     def test_delete_testresult_simple(self):
-        from datetime import datetime        
+        from datetime import datetime
 
-        test_case = TestCase(name='ABC Test', description='Test', priority=10,
-                             user_story=self.story)
+        test_case = TestCase(name = 'ABC Test', description = 'Test', priority = 10,
+                             user_story = self.story)
         test_case.save()
-        
-        test_result = TestResult(result=1, comments='Test', tester=User.objects.all()[0],
-                                 test_case=test_case, date=datetime.today())
+
+        test_result = TestResult(result = 1, comments = 'Test', tester = User.objects.all()[0],
+                                 test_case = test_case, date = datetime.today())
         test_result.save()
 
         pre = TestResult.objects.count()
@@ -101,22 +101,22 @@ class TestUS104(TestUS49Base):
         b.wait()
         b.click("xpath=id('delete_testresult_%d')/a/img" % (test_result.id))
         b.wait()
-        b.click("xpath=id('content')/form/div/input[2]")      
+        b.click("xpath=id('content')/form/div/input[2]")
         for x in xrange(20):
             b.wait()
 
-        self.assertEqual(TestResult.objects.count(), pre-1)
+        self.assertEqual(TestResult.objects.count(), pre - 1)
 
 
     def test_edit_testresutl_simple(self):
         from datetime import datetime
 
-        test_case = TestCase(name='ABC Test', description='Test', priority=10,
-                             user_story=self.story)
+        test_case = TestCase(name = 'ABC Test', description = 'Test', priority = 10,
+                             user_story = self.story)
         test_case.save()
-        
-        test_result = TestResult(result=1, comments='Test', tester=User.objects.all()[0],
-                                 test_case=test_case, date=datetime.today())
+
+        test_result = TestResult(result = 1, comments = 'Test', tester = User.objects.all()[0],
+                                 test_case = test_case, date = datetime.today())
         test_result.save()
 
         b = self.browser
@@ -140,7 +140,7 @@ class TestUS104(TestUS49Base):
         for x in xrange(15):
             b.wait()
 
-        test_result = TestResult.objects.get(pk=test_result.id)
+        test_result = TestResult.objects.get(pk = test_result.id)
         self.assertEqual(test_result.result, 0)
         self.assertEqual(test_result.comments, "this is a test 2")
         self.assertEqual(test_result.date, datetime(2008, 8, 2, 0, 0))
@@ -152,14 +152,14 @@ class TestUS104(TestUS49Base):
         test_case.delete()
 
     def test_delete_testresult_from_result_view(self):
-        from datetime import datetime        
+        from datetime import datetime
 
-        test_case = TestCase(name='ABC Test', description='Test', priority=10,
-                             user_story=self.story)
+        test_case = TestCase(name = 'ABC Test', description = 'Test', priority = 10,
+                             user_story = self.story)
         test_case.save()
-        
-        test_result = TestResult(result=1, comments='Test', tester=User.objects.all()[0],
-                                 test_case=test_case, date=datetime.today())
+
+        test_result = TestResult(result = 1, comments = 'Test', tester = User.objects.all()[0],
+                                 test_case = test_case, date = datetime.today())
         test_result.save()
 
         pre = TestResult.objects.count()
@@ -172,24 +172,24 @@ class TestUS104(TestUS49Base):
         b.wait()
         b.click("xpath=id('delete_testresult_%d')/a/img" % (test_result.id))
         b.wait()
-        b.click("xpath=id('content')/form/div/input[2]")      
+        b.click("xpath=id('content')/form/div/input[2]")
         b.wait()
-        self.assertEqual(TestResult.objects.count(), pre-1)
+        self.assertEqual(TestResult.objects.count(), pre - 1)
         test_case.delete()
 
     def test_delete_testcase_with_testresult(self):
-        from datetime import datetime        
+        from datetime import datetime
 
-        test_case = TestCase(name='ABC Test', description='Test', priority=10,
-                             user_story=self.story)
+        test_case = TestCase(name = 'ABC Test', description = 'Test', priority = 10,
+                             user_story = self.story)
         test_case.save()
-        
-        test_result = TestResult(result=1, comments='Test', tester=User.objects.all()[0],
-                                 test_case=test_case, date=datetime.today())
+
+        test_result = TestResult(result = 1, comments = 'Test', tester = User.objects.all()[0],
+                                 test_case = test_case, date = datetime.today())
         test_result.save()
 
-        test_result = TestResult(result=2, comments='Test', tester=User.objects.all()[0],
-                                 test_case=test_case, date=datetime.today())
+        test_result = TestResult(result = 2, comments = 'Test', tester = User.objects.all()[0],
+                                 test_case = test_case, date = datetime.today())
         test_result.save()
 
         pre = (TestCase.objects.count(), TestResult.objects.count(),)
@@ -201,10 +201,10 @@ class TestUS104(TestUS49Base):
         last_location = b.get_location()
         b.click("xpath=id('delete_testcase_%d')/a" % (test_case.id))
         b.wait()
-        b.click("xpath=id('content')/form/div/input[2]")      
-        for i in xrange(15):        
+        b.click("xpath=id('content')/form/div/input[2]")
+        for i in xrange(15):
             b.wait()
         self.assertEqual(last_location, b.get_location())
-        self.assertEqual(TestResult.objects.count(), pre[1]-2)
-        self.assertEqual(TestCase.objects.count(), pre[0]-1)
+        self.assertEqual(TestResult.objects.count(), pre[1] - 2)
+        self.assertEqual(TestCase.objects.count(), pre[0] - 1)
 

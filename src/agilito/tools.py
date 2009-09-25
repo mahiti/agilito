@@ -13,7 +13,7 @@ def restricted(f):
     def wrapper(request, project_id, *args, **kwargs):
         if not request.user.is_superuser:
             try:
-                project = request.user.project_set.get(id=project_id)
+                project = request.user.project_set.get(id = project_id)
             except Project.DoesNotExist, msg:
                 raise Http404, msg
         return f(request, project_id, *args, **kwargs)

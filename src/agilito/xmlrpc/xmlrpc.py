@@ -32,7 +32,7 @@ def is_public(func):
     return func is not None and hasattr(func, 'public') and func.public
 
 def dotify(name):
-    return name.replace('_','.')
+    return name.replace('_', '.')
 
 def list_public_methods(obj):
     """Returns a list of attribute strings, found in the specified
@@ -42,18 +42,18 @@ def list_public_methods(obj):
     methods = [dotify(m) for m in methods if is_public(getattr(obj, m, None))]
     return methods
 
-def resolve_dotted_attribute(obj, attr, allow_dotted_names=True):
+def resolve_dotted_attribute(obj, attr, allow_dotted_names = True):
     """resolve_dotted_attribute(a, 'b.c.d') => a.b.c.d
 
     Similar to the one in SimpleXMLRPCServer, except that it tries
     converting dots to underscores, too.
     """
-    
+
     attrs = attr.split('.')
-    
+
     if attrs[0].startswith('_'):
         raise AttributeError('attempt to access private attribute "%s"' % i)
-    for i in range(len(attrs),0,-1):
+    for i in range(len(attrs), 0, -1):
         name = '_'.join(attrs[:i])
         obj0 = getattr(obj, name, None)
         #print '%r %r -> %r' % (obj, name, obj0)
@@ -96,7 +96,7 @@ class SafeXMLRPCView(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
         return methods
 
     system_listMethods.public = True
-    
+
     def system_methodSignature(self, method_name):
         return SimpleXMLRPCView.system_methodSignature(self, method_name)
     system_methodSignature.public = True
@@ -104,7 +104,7 @@ class SafeXMLRPCView(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
     def system_methodHelp(self, method_name):
         return SimpleXMLRPCView.system_methodHelp(self, method_name)
     system_methodHelp.public = True
-    
+
     def _dispatch(self, method, params):
         """Dispatches the XML-RPC method.
 
@@ -120,7 +120,7 @@ class SafeXMLRPCView(SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
                 # check for a _dispatch method
                 if hasattr(self.instance, '_dispatch'):
                     return apply(
-                        getattr(self.instance,'_dispatch'),
+                        getattr(self.instance, '_dispatch'),
                         (method, params)
                         )
                 else:
@@ -144,14 +144,14 @@ def view(request, module):
         mod = __import__(module, '', '', [''])
     except ImportError, e:
         raise EnvironmentError, "Could not import module '%s' (is it on sys.path?): %s" % (module, e)
-    
+
     dispatcher.register_instance(mod)
     dispatcher.register_introspection_functions()
 
     try:
         #if request.META['REQUEST_METHOD'] != 'POST':
         #    raise Exception('Non POST methods not allowed.')
-    
+
         # get arguments
         data = request.raw_post_data
         response = dispatcher._marshaled_dispatch(
@@ -164,5 +164,5 @@ def view(request, module):
             SimpleXMLRPCServer.xmlrpclib.Fault(1, "%s:%s" % (
                     sys.exc_type, sys.exc_value))
         )
-    return HttpResponse(response, mimetype="text/xml")
+    return HttpResponse(response, mimetype = "text/xml")
 

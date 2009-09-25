@@ -14,6 +14,6 @@ class TestUS7(TestUS49Base):
         b.click("css=#content input[type=submit]")
         for i in xrange(20):
             b.wait()
-        
+
         self.assertEqual(UserStory.objects.count(), 0)
 

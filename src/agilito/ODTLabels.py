@@ -19,7 +19,7 @@ class ODTLabels:
     nsText = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
     nsTable = "urn:oasis:names:tc:opendocument:xmlns:table:1.0"
     nsOffice = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-    
+
     def __init__(self, iniFile = __file__.replace('.py', '.ini')):
         self.labels = ConfigParser.RawConfigParser()
         if os.path.exists(iniFile): self.labels.read(iniFile)
@@ -145,7 +145,7 @@ class ODTLabels:
                 frame.parentNode.removeChild(frame)
                 frame.unlink()
                 pass
-    
+
         if taskTemplate is None and storyTemplate is None:
             return content.toxml('utf-8')
 
@@ -189,7 +189,7 @@ class ODTLabels:
         for oaa in content.getElementsByTagNameNS(ODTLabels.nsOffice, 'automatic-styles'):
             oaa.appendChild(pagebreak)
             break
-            
+
         cpp = self.down * self.across
 
         for card in tasks: card['_template'] = taskTemplate

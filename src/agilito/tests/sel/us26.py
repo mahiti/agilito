@@ -15,5 +15,5 @@ class TestUS26(TestUS49Base):
         b.type("id_name", "hi")
         b.click("css=#content input[type=submit]")
         b.wait()
-        
-        self.assertEqual(Task.objects.count(), pre+1)
+
+        self.assertEqual(Task.objects.count(), pre + 1)

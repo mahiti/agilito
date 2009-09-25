@@ -4,18 +4,18 @@ from agilito.models import Project, User, UserStory
 class TestUS21(SeleniumBase):
     def setUp(self):
         self.passwd = 'hola' # random_name()
-        self.user = User(username=random_name())
+        self.user = User(username = random_name())
         self.user.set_password(self.passwd)
         self.user.save()
-        self.proj1 = Project(name=random_name())
-        self.proj2 = Project(name=random_name())
+        self.proj1 = Project(name = random_name())
+        self.proj2 = Project(name = random_name())
         for proj in self.proj1, self.proj2:
             proj.save()
             proj.project_members.add(self.user)
             proj.save()
-        self.us1 = UserStory(name=random_name(), project=self.proj1)
+        self.us1 = UserStory(name = random_name(), project = self.proj1)
         self.us1.save()
-        self.us2 = UserStory(name=random_name(), project=self.proj2)
+        self.us2 = UserStory(name = random_name(), project = self.proj2)
         self.us2.save()
         super(TestUS21, self).setUp()
 
@@ -39,4 +39,4 @@ class TestUS21(SeleniumBase):
                  "label=" + target_project.name)
         b.wait()
         self.assertEqual(b.get_text(us_locator), target_story.name)
-        
+

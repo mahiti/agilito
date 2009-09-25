@@ -13,10 +13,10 @@ from tagging.utils import parse_tag_input
 
 def get_project(user, project):
     if user.is_superuser:
-        return Project.objects.get(id=project)
+        return Project.objects.get(id = project)
 
     try:
-        project = user.project_set.get(id=project)
+        project = user.project_set.get(id = project)
     except Project.DoesNotExist:
         raise ObjectDoesNotExist
 
@@ -70,7 +70,7 @@ class Iteration(Feed):
             raise ObjectDoesNotExist
         bits = [int(b) for b in bits]
         project = get_project(self.request.user, bits[0])
-        return Sprint.objects.get(project__id = project.id, id=bits[1])
+        return Sprint.objects.get(project__id = project.id, id = bits[1])
 
     def title(self, iteration):
         it = iteration.name
@@ -89,7 +89,7 @@ class Iteration(Feed):
 
     def items(self, iteration):
         tasks = []
-        for story in UserStory.objects.filter(iteration=iteration).all():
+        for story in UserStory.objects.filter(iteration = iteration).all():
             for task in story.task_set.all():
                 tasks.append(task)
 
@@ -145,7 +145,7 @@ def view_or_basicauth(view, request, test_func, realm = "", *args, **kwargs):
             #
             if auth[0].lower() == "basic":
                 uname, passwd = base64.b64decode(auth[1]).split(':')
-                user = authenticate(username=uname, password=passwd)
+                user = authenticate(username = uname, password = passwd)
                 if user is not None:
                     if user.is_active:
                         login(request, user)
@@ -224,5 +224,5 @@ def has_perm_or_basicauth(perm, realm = ""):
     return view_decorator
 
 @logged_in_or_basicauth('Agilito')
-def feed(request, url, feed_dict=None):
+def feed(request, url, feed_dict = None):
     return unauthenticated_feed(request, url, feed_dict)

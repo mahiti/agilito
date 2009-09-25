@@ -15,7 +15,7 @@ import math
 from queryutils.queryutils import SearchEqualOp, SearchQueryGenerator
 
 # Auxiliary functions.
-def _if_is_none_else(item,  rv_case_none,  fun_case_not_none=None):
+def _if_is_none_else(item, rv_case_none, fun_case_not_none = None):
     if item is None:
         return rv_case_none
     elif fun_case_not_none is None:
@@ -54,15 +54,15 @@ class NoProjectException(Exception):
 PERMLINK_PREFIX = __name__.rsplit('.', 1)[0] + '.views.'
 
 class ClueModel(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length = 200)
+    description = models.TextField(blank = True)
 
     class Meta:
         # mondo weird way of doing this, heh
         abstract = True
 
     @classmethod
-    def query(klass, qstatement, project_id=None):
+    def query(klass, qstatement, project_id = None):
         grammar = { 'name' : SearchEqualOp('name__icontains'),
                     'description': SearchEqualOp('description__icontains'),
                     'id': SearchEqualOp(('id', int, 0))
@@ -71,7 +71,7 @@ class ClueModel(models.Model):
         if project_id is not None:
             field_names = klass._meta.get_all_field_names()
             if 'project' in field_names:
-                initial_set = klass.objects.filter(project__id=project_id)
+                initial_set = klass.objects.filter(project__id = project_id)
             else:
                 # I *could* query klass._meta and thus disocver a
                 # relation to project and filter on that, but it
@@ -82,10 +82,10 @@ class ClueModel(models.Model):
                 if 'user_story' not in field_names:
                     raise NotImplementedError, \
                         "I don't know how to search on that yet, it seems"
-                initial_set = klass.objects.filter(user_story__project__id=project_id)
-            return sg.make_query(qstatement, init_q_set=initial_set)
+                initial_set = klass.objects.filter(user_story__project__id = project_id)
+            return sg.make_query(qstatement, init_q_set = initial_set)
         return sg.make_query(qstatement)
-    
+
     @models.permalink
     def get_absolute_url(self):
         # same comment here as for query and finding project id
@@ -100,19 +100,19 @@ class ClueModel(models.Model):
         return rv
 
     def get_container_model(self):
-        raise NotImplementedError,  \
+        raise NotImplementedError, \
             "I don't know who my container is?"
 
     def get_container_url(self):
         container = self.get_container_model()
-        if not (container is None):        
+        if not (container is None):
             return container.get_absolute_url()
         else:
             return None
 
 # Create your models here.
 class Project(ClueModel):
-    project_members = models.ManyToManyField(User, null=True, blank=True)
+    project_members = models.ManyToManyField(User, null = True, blank = True)
 
     def __unicode__(self):
         return u'P%s: %s' % (self.id, self.name)
@@ -131,10 +131,10 @@ class Project(ClueModel):
         return klass.objects.all()[0]
 
     def backlog(self):
-        return UserStory.objects.filter(project=self).exclude(
-            state=UserStory.STATES.ARCHIVED).exclude(
-            state=UserStory.STATES.ACCEPTED).exclude(
-            state=UserStory.STATES.FAILED).order_by('rank')
+        return UserStory.objects.filter(project = self).exclude(
+            state = UserStory.STATES.ARCHIVED).exclude(
+            state = UserStory.STATES.ACCEPTED).exclude(
+            state = UserStory.STATES.FAILED).order_by('rank')
 
     def closest(self, v, choices):
         sel = 0
@@ -148,7 +148,7 @@ class Project(ClueModel):
 
     def baseline_story(self):
         data = []
-        for story in self.userstory_set.exclude(state=UserStory.STATES.ARCHIVED).all():
+        for story in self.userstory_set.exclude(state = UserStory.STATES.ARCHIVED).all():
             hours = story.actuals or story.estimated
             if not hours:
                 continue
@@ -158,12 +158,12 @@ class Project(ClueModel):
         if len(data) == 0:
             return None
 
-        avg = sum(d[1] for d in data)/len(data)
+        avg = sum(d[1] for d in data) / len(data)
 
         baseline = self.closest(avg, [d[1] for d in data])
-        return UserStory.objects.get(id=data[baseline][0])
+        return UserStory.objects.get(id = data[baseline][0])
 
-    def suggest_sizes(self, baseline=None, size=5): # UserStory.SIZES.M): but needs forward declaration
+    def suggest_sizes(self, baseline = None, size = 5): # UserStory.SIZES.M): but needs forward declaration
         if baseline is None:
             baseline = self.baseline_story()
 
@@ -173,9 +173,9 @@ class Project(ClueModel):
         factor = float(size) / float(baseline.actuals or baseline.estimated)
 
         sizes = [s[0] for s in UserStory.SIZES.choices()]
-        
+
         suggestions = {}
-        for story in self.userstory_set.exclude(state=UserStory.STATES.ARCHIVED).all():
+        for story in self.userstory_set.exclude(state = UserStory.STATES.ARCHIVED).all():
             hours = float(story.actuals or story.estimated)
             if not hours:
                 continue
@@ -186,7 +186,7 @@ class Project(ClueModel):
 
 class Release(ClueModel):
     project = models.ForeignKey(Project)
-    
+
 
     def __unicode__(self):
         return u'RE%s: %s' % (self.id, self.name)
@@ -203,7 +203,7 @@ class Iteration(ClueModel):
     start_date = models.DateField()
     end_date = models.DateField()
 
-    release = models.ForeignKey('Release', null=True, blank=True)
+    release = models.ForeignKey('Release', null = True, blank = True)
     project = models.ForeignKey('Project')
 
     def __unicode__(self):
@@ -213,17 +213,17 @@ class Iteration(ClueModel):
     def get_absolute_url(self):
         return 'iteration_status_with_id', (), {'project_id': self.project.id,
                                                 'iteration_id': self.id }
-                                                
+
     @property
     def us_accepted(self):
-        return sum(us.planned or 0 for us in self.userstory_set.filter(Q(state=UserStory.STATES.ACCEPTED)))
-    
+        return sum(us.planned or 0 for us in self.userstory_set.filter(Q(state = UserStory.STATES.ACCEPTED)))
+
     @property
     def us_accepted_percentage(self):
         total = sum(us.planned or 0 for us in self.userstory_set.all())
         accepted = self.us_accepted
         if total <> 0:
-            return (float(accepted)/float(total))*100 
+            return (float(accepted) / float(total)) * 100
         else:
             return 0
 
@@ -233,9 +233,9 @@ class Iteration(ClueModel):
         date is start-of-day.
         """
         until = min(self.end_date + datetime.timedelta(1), date) - datetime.timedelta(1)
-        return rrule(DAILY, cache=True,
-                     dtstart=self.start_date, until=until,
-                     byweekday=(MO,TU,WE,TH,FR)).count()
+        return rrule(DAILY, cache = True,
+                     dtstart = self.start_date, until = until,
+                     byweekday = (MO, TU, WE, TH, FR)).count()
 
     def total_days(self):
         return self.day_number(self.end_date + datetime.timedelta(1))
@@ -252,7 +252,7 @@ class Iteration(ClueModel):
 
     def remaining_hours(self, date):
         return sum(t.remaining_for_date(date)
-                   for t in Task.objects.filter(user_story__iteration=self).exclude(state=Task.STATES.ARCHIVED))
+                   for t in Task.objects.filter(user_story__iteration = self).exclude(state = Task.STATES.ARCHIVED))
 
     def remaining_storypoints(self, date):
         is_start = ((date - self.start_date).days == 0)
@@ -260,29 +260,29 @@ class Iteration(ClueModel):
 
     def total_estimated(self):
         return sum(t.estimate or 0
-                   for t in Task.objects.filter(user_story__iteration=self).exclude(state=Task.STATES.ARCHIVED))
+                   for t in Task.objects.filter(user_story__iteration = self).exclude(state = Task.STATES.ARCHIVED))
 
-    def user_estimated(self, userid):    
-        tasks = Task.objects.filter(owner__id=userid, user_story__iteration__pk=self.id).exclude(state=Task.STATES.ARCHIVED)
+    def user_estimated(self, userid):
+        tasks = Task.objects.filter(owner__id = userid, user_story__iteration__pk = self.id).exclude(state = Task.STATES.ARCHIVED)
 
         return sum(t.estimate or 0 for t in tasks)
 
     def user_progress(self, userid):
-        tasklogs = self.tasklog_set.filter(owner__id=userid)
+        tasklogs = self.tasklog_set.filter(owner__id = userid)
         return sum(tl.time_on_task or 0 for tl in tasklogs)
 
     def burndown_data(self):
         burndown = []
         today = datetime.date.today()
-        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-        rr = list(rrule(DAILY, cache=True,
-                        dtstart=self.start_date, until=self.end_date,
-                        byweekday=(MO,TU,WE,TH,FR)))
+        tomorrow = datetime.date.today() + datetime.timedelta(days = 1)
+        rr = list(rrule(DAILY, cache = True,
+                        dtstart = self.start_date, until = self.end_date,
+                        byweekday = (MO, TU, WE, TH, FR)))
         rr.append(rr[-1] + datetime.timedelta(1))
         for i, a_datetime in enumerate(rr):
             a_date = a_datetime.date()
-            data = dict(day=i,
-                        ideal=self.ideal_hours(a_date))
+            data = dict(day = i,
+                        ideal = self.ideal_hours(a_date))
             if a_date > today:
                 data['remaining'] = None
                 data['remaining_storypoints'] = None
@@ -300,7 +300,7 @@ class Iteration(ClueModel):
 
     def story_cards(self):
         cards = []
-        for us in UserStory.objects.filter(iteration=self):
+        for us in UserStory.objects.filter(iteration = self):
             card = {}
             card['StoryID'] = us.id
             card['StoryName'] = us.name
@@ -312,7 +312,7 @@ class Iteration(ClueModel):
 
     def task_cards(self):
         cards = []
-        for t in Task.objects.filter(user_story__iteration=self).exclude(state=Task.STATES.ARCHIVED):
+        for t in Task.objects.filter(user_story__iteration = self).exclude(state = Task.STATES.ARCHIVED):
             card = {}
             card['TaskID'] = t.id
             card['TaskName'] = t.name
@@ -334,7 +334,7 @@ class Iteration(ClueModel):
 
     @property
     def estimated_without_owner(self):
-        tasks = Task.objects.filter(owner=None, user_story__iteration__pk=self.id).exclude(state=Task.STATES.ARCHIVED)
+        tasks = Task.objects.filter(owner = None, user_story__iteration__pk = self.id).exclude(state = Task.STATES.ARCHIVED)
 
         return sum(tl.estimate or 0 for tl in tasks)
 
@@ -360,7 +360,7 @@ class Iteration(ClueModel):
         if self.release is None:
             return self.project
         return self.release
-        
+
     class Meta:
         permissions = (
             ('view', 'Can view the iteration.'),
@@ -368,7 +368,7 @@ class Iteration(ClueModel):
         ordering = ('-id',)
 
 class UserStoryAttachment(ClueModel):
-    attachment = models.FileField(upload_to='attachments/')
+    attachment = models.FileField(upload_to = 'attachments/')
 
     user_story = models.ForeignKey('UserStory')
 
@@ -397,30 +397,30 @@ class UserStory(ClueModel):
                 (50, 'Failed'))
 
     SIZES = FieldChoices(
-                (1,  'XXS'),
-                (2,  'XS'),
-                (3,  'S'),
-                (5,  'M'),
-                (8,  'L'),
+                (1, 'XXS'),
+                (2, 'XS'),
+                (3, 'S'),
+                (5, 'M'),
+                (8, 'L'),
                 (13, 'XL'),
                 (21, 'XXL'),
-                (1000,  'Too large'))
+                (1000, 'Too large'))
 
     project = models.ForeignKey(Project)
 
-    planned = models.SmallIntegerField(null=True, blank=True)
-    iteration = models.ForeignKey(Iteration, null=True, blank=True)
-    rank = models.IntegerField(null=True, blank=True)
+    planned = models.SmallIntegerField(null = True, blank = True)
+    iteration = models.ForeignKey(Iteration, null = True, blank = True)
+    rank = models.IntegerField(null = True, blank = True)
 
-    state = models.SmallIntegerField(choices=STATES.choices(), default=STATES.DEFINED)
+    state = models.SmallIntegerField(choices = STATES.choices(), default = STATES.DEFINED)
 
     # alter table agilito_userstory add column size smallint
-    size = models.SmallIntegerField(choices=SIZES.choices(), null=True)
+    size = models.SmallIntegerField(choices = SIZES.choices(), null = True)
 
     # alter table agilito_userstory add column created date NOT NULL default 'now',
     # alter table agilito_userstory add column closed date
-    created = models.DateField(default=datetime.datetime.now())
-    closed = models.DateField(null=True)
+    created = models.DateField(default = datetime.datetime.now())
+    closed = models.DateField(null = True)
 
     def __unicode__(self):
         return u'US%s: %s' % (self.id, self.name)
@@ -448,14 +448,14 @@ class UserStory(ClueModel):
             return 'planned'
 
         # allow for one day of leeway
-        if self.iteration.end_date >= (datetime.date.today() - datetime.timedelta(days=1)): 
+        if self.iteration.end_date >= (datetime.date.today() - datetime.timedelta(days = 1)):
             return 'in-progress'
 
         return 'forgotten'
 
     @property
     def is_blocked(self):
-        return (Impediment.objects.filter(resolved=None, tasks__user_story=self).count() != 0)
+        return (Impediment.objects.filter(resolved = None, tasks__user_story = self).count() != 0)
 
     @property
     def is_pinned(self):
@@ -464,14 +464,14 @@ class UserStory(ClueModel):
         # would duplicate stories even if you accidently set the wrong
         # iteration. Best to let the user choose. Stuff that has seen
         # work (= tasklogs) should be considered in-use though.
-        return (TaskLog.objects.filter(task__user_story=self).count() != 0)
+        return (TaskLog.objects.filter(task__user_story = self).count() != 0)
 
     @property
     def relative_rank(self):
         if self.iteration is None or self.rank is None:
             return None
 
-        return UserStory.objects.filter(iteration=self.iteration, rank__lt=self.rank).count() + 1
+        return UserStory.objects.filter(iteration = self.iteration, rank__lt = self.rank).count() + 1
 
     @property
     def estimated(self):
@@ -497,12 +497,12 @@ class UserStory(ClueModel):
         for t in testcases:
             try:
                 tf = t.testresult_set.latest()
-                if tf.result<>1:
-                    out +=1
-                
+                if tf.result <> 1:
+                    out += 1
+
             except TestResult.DoesNotExist:
                 pass
-               
+
         return out
 
     @property
@@ -515,7 +515,7 @@ class UserStory(ClueModel):
         tasks = self.task_set.all()
 
         self.id = None
-        self.iteration=iteration
+        self.iteration = iteration
         self.state = UserStory.STATES.DEFINED
         self.created = datetime.datetime.now()
         self.save()
@@ -529,12 +529,12 @@ class UserStory(ClueModel):
                 task.save()
 
         if state == UserStory.STATES.FAILED:
-            story = UserStory.objects.get(id=id)
+            story = UserStory.objects.get(id = id)
             story.state = state
             story.save()
 
         elif state == UserStory.STATES.ARCHIVED:
-            story = UserStory.objects.get(id=id)
+            story = UserStory.objects.get(id = id)
             story.archive(archiver)
 
     def archive(self, archiver):
@@ -549,13 +549,13 @@ class UserStory(ClueModel):
 
     def get_container_url(self):
         if self.iteration is None:
-            return '/%s/backlog' % self.project.id         
+            return '/%s/backlog' % self.project.id
         else:
             return self.iteration.get_absolute_url()
 
     @property
     def tasks(self):
-        return Task.objects.filter(user_story=self)
+        return Task.objects.filter(user_story = self)
 
     class Meta:
         verbose_name = _(u'User Story')
@@ -574,7 +574,7 @@ class UserStory(ClueModel):
             cursor.execute('select rank from agilito_userstory where id=%s', (self.id,))
             rank = cursor.fetchone()[0]
             if not rank is None:
-                cursor.execute('update agilito_userstory set rank = rank - 1 where project_id=%s and rank > %s', (self.project_id,rank))
+                cursor.execute('update agilito_userstory set rank = rank - 1 where project_id=%s and rank > %s', (self.project_id, rank))
         if not self.rank is None:
             cursor.execute("""
                 update agilito_userstory set rank = rank + 1 where project_id=%s and not rank is null and rank >= %s
@@ -598,9 +598,9 @@ class UserProfile(models.Model):
                     (99, 'Other'))
 
     hours_per_week = models.SmallIntegerField()
-    category = models.SmallIntegerField(choices=CATEGORIES.choices())
-    user = models.ForeignKey(User, unique=True)
-    
+    category = models.SmallIntegerField(choices = CATEGORIES.choices())
+    user = models.ForeignKey(User, unique = True)
+
     def __unicode__(self):
         return u'%s: %s' % (self.user.username, self.get_category_display())
 
@@ -620,21 +620,21 @@ class Task(ClueModel):
                 (30, 'Completed'))
 
     CATEGORIES = FieldChoices(
-                ( 0, 'Undefined'),
+                (0, 'Undefined'),
                 (10, 'UI'),
                 (20, 'Design'),
                 (30, 'Development'),
                 (40, 'Testing'),
                 (99, 'Other'))
 
-    estimate = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    remaining = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    estimate = models.DecimalField(max_digits = 5, decimal_places = 2, blank = True, null = True)
+    remaining = models.DecimalField(max_digits = 5, decimal_places = 2, blank = True, null = True)
 
-    state = models.SmallIntegerField(choices=STATES.choices(), default=STATES.DEFINED)
+    state = models.SmallIntegerField(choices = STATES.choices(), default = STATES.DEFINED)
 
-    category = models.SmallIntegerField(choices=CATEGORIES.choices(), default=CATEGORIES.UNDEFINED)
+    category = models.SmallIntegerField(choices = CATEGORIES.choices(), default = CATEGORIES.UNDEFINED)
 
-    owner = models.ForeignKey(User, blank=True, null=True)
+    owner = models.ForeignKey(User, blank = True, null = True)
     user_story = models.ForeignKey('UserStory')
 
     # alter table agilito_task add column tags varchar(255) NOT NULL default ''
@@ -646,7 +646,7 @@ class Task(ClueModel):
 
     @property
     def is_blocked(self):
-        return (Impediment.objects.filter(resolved=None, tasks=self).count() != 0)
+        return (Impediment.objects.filter(resolved = None, tasks = self).count() != 0)
 
     @property
     def actuals(self):
@@ -670,13 +670,13 @@ class Task(ClueModel):
 
     def archive(self, archiver):
         self.state = Task.STATES.ARCHIVED
-        self.save(user=archiver)
+        self.save(user = archiver)
 
     def remaining_for_date(self, date):
         # find the oldest tasklog that is newer than date and check
         # what the estimate on this task was then
         try:
-            log = self.tasklog_set.filter(date__gt=date).order_by('date')[0:1].get()
+            log = self.tasklog_set.filter(date__gt = date).order_by('date')[0:1].get()
         except TaskLog.DoesNotExist:
             # no tasklog between here and there
             return self.remaining or 0
@@ -694,12 +694,12 @@ class Task(ClueModel):
     def get_container_model(self):
         return self.user_story
 
-    def save(self, tasklog=None, user=None):
+    def save(self, tasklog = None, user = None):
         if self.state == Task.STATES.ARCHIVED:
             self.remaining = 0
 
         if not self.id is None:
-            old = Task.objects.get(id=self.id)
+            old = Task.objects.get(id = self.id)
             if (old.remaining != self.remaining) or tasklog:
                 if tasklog is None:
                     tasklog = TaskLog()
@@ -741,11 +741,11 @@ class TestCase(ClueModel):
 
     user_story = models.ForeignKey('UserStory')
 
-    priority = models.SmallIntegerField(choices=PRIORITIES.choices(),
-                                        null=True, blank=True, default=20)
-    precondition = models.TextField(blank=True)
-    steps = models.TextField(blank=True)
-    postcondition = models.TextField(blank=True)
+    priority = models.SmallIntegerField(choices = PRIORITIES.choices(),
+                                        null = True, blank = True, default = 20)
+    precondition = models.TextField(blank = True)
+    steps = models.TextField(blank = True)
+    postcondition = models.TextField(blank = True)
 
     def __unicode__(self):
         return u'TC%s: %s' % (self.id, self.name)
@@ -771,8 +771,8 @@ class TestResult(models.Model):
                 (2, 'Error'),
                 (3, 'Inconclusive'))
 
-    result = models.SmallIntegerField(choices=RESULTS.choices())
-    comments = models.TextField(blank=True)
+    result = models.SmallIntegerField(choices = RESULTS.choices())
+    comments = models.TextField(blank = True)
     date = models.DateTimeField()
     tester = models.ForeignKey(User)
     test_case = models.ForeignKey(TestCase)
@@ -790,18 +790,18 @@ class TestResult(models.Model):
                                                  'userstory_id': self.test_case.user_story.id,
                                                  'testcase_id' : self.test_case.id,
                                                  'testresult_id': self.id,
-                                                }      
+                                                }
 
     def get_container_model(self):
         return self.test_case
-    
+
     def get_container_url(self):
         return self.test_case.get_absolute_url()
 
     class Meta:
-        ordering = ('-date',)        
-        
-        get_latest_by = 'date'        
+        ordering = ('-date',)
+
+        get_latest_by = 'date'
 
         verbose_name = _(u'Test Result')
         verbose_name_plural = _(u'Test Results')
@@ -811,10 +811,10 @@ class TestResult(models.Model):
         )
 
 class Impediment(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    opened = models.DateField(default=datetime.datetime.now())
-    resolved = models.DateTimeField(null=True)
+    name = models.CharField(max_length = 200)
+    description = models.TextField(blank = True)
+    opened = models.DateField(default = datetime.datetime.now())
+    resolved = models.DateTimeField(null = True)
 
     tasks = models.ManyToManyField('Task')
 
@@ -825,8 +825,8 @@ class Impediment(models.Model):
         return PERMLINK_PREFIX + 'impediment_edit', (), {'project_id': it.project.id, 'iteration_id': it.id, 'impediment_id': self.id }
 
     class Meta:
-        ordering = ('-opened',)        
-        
+        ordering = ('-opened',)
+
         verbose_name = _(u'Impediment')
         verbose_name_plural = _(u'Impediments')
 
@@ -836,16 +836,16 @@ class Impediment(models.Model):
 
 class TaskLog(models.Model):
     task = models.ForeignKey('Task')
-    time_on_task = models.DecimalField(max_digits=5, decimal_places=2)
+    time_on_task = models.DecimalField(max_digits = 5, decimal_places = 2)
     summary = models.TextField()
     date = models.DateTimeField()
-    iteration = models.ForeignKey('Iteration', null=True)
+    iteration = models.ForeignKey('Iteration', null = True)
     owner = models.ForeignKey(User)
-    old_remaining = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    old_remaining = models.DecimalField(max_digits = 5, decimal_places = 2, blank = True, null = True)
 
 
     def __unicode__(self):
-        return 'Task Log: [%s, %s, %s, %s, %s]' % (self.iteration, self.date, 
+        return 'Task Log: [%s, %s, %s, %s, %s]' % (self.iteration, self.date,
                                                    self.task,
                                                    self.time_on_task,
                                                    self.owner.username)

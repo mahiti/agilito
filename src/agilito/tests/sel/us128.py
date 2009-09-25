@@ -35,13 +35,13 @@ class TestUS128(TestUS49Base):
         remaining value changed, even when the estimated time value is
         changed.
         """
-        tl = TaskLog(task=self.task_b,
-                     time_on_task=5,
-                     summary='...',
-                     date=datetime.date.today(),
-                     iteration=self.iteration,
-                     owner=self.user,
-                     old_remaining=self.task_b.remaining)
+        tl = TaskLog(task = self.task_b,
+                     time_on_task = 5,
+                     summary = '...',
+                     date = datetime.date.today(),
+                     iteration = self.iteration,
+                     owner = self.user,
+                     old_remaining = self.task_b.remaining)
         tl.save()
 
         b = self.browser
@@ -52,4 +52,4 @@ class TestUS128(TestUS49Base):
         self.assertEqual(Decimal(b.get_value("id_remaining")),
                          Decimal(str(self.task_b.remaining)))
 
-    
+

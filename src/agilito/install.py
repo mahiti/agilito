@@ -44,7 +44,7 @@ def rerun(msg = None):
     sys.exit()
 
 required_apps = ['django.contrib.admin', 'django.contrib.humanize', 'django.contrib.markup', 'accounts' ]
-def verify(name, url=None, svn=False, optional=False):
+def verify(name, url = None, svn = False, optional = False):
     global required_apps, complete
 
     if svn:
@@ -78,14 +78,14 @@ def verify(name, url=None, svn=False, optional=False):
 if not verify('django', 'http://www.djangoproject.com/'):
     rerun()
 
-verify('pyExcelerator', 'http://sourceforge.net/projects/pyexcelerator', optional=True)
-verify('matplotlib', 'http://matplotlib.sourceforge.net/', optional=True)
+verify('pyExcelerator', 'http://sourceforge.net/projects/pyexcelerator', optional = True)
+verify('matplotlib', 'http://matplotlib.sourceforge.net/', optional = True)
 verify('agilito', 'http://agilito.googlecode.com/svn/trunk/agilito', True)
 
 if fresh:
     print 'Installing default url redirector'
     shutil.copyfile('agilito/install/urls.py', 'urls.py')
-    
+
 verify('queryutils', 'http://agilito.googlecode.com/svn/trunk/queryutils', True)
 verify('tagging', 'http://django-tagging.googlecode.com/svn/trunk/tagging', True)
 

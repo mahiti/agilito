@@ -1,4 +1,4 @@
-from agilito.models import Project, Release, Iteration, UserStoryAttachment,\
+from agilito.models import Project, Release, Iteration, UserStoryAttachment, \
     UserStory, UserProfile, Task, TestCase, TestResult, TaskLog, \
     Impediment
 from django.contrib import admin
@@ -43,24 +43,24 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 class UserStoryAttachmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
-    list_display_links = ('name',)    
+    list_display_links = ('name',)
 
 class UserStoryAdmin(admin.ModelAdmin):
     inlines = [UserStoryAttachmentInLine, TestCaseInLine, TaskInLine]
     list_display = ('id', 'name', 'rank', 'planned', 'iteration', 'state',
                     'estimated', 'actuals', 'remaining')
     list_display_links = ('id', 'name',)
-    list_filter = ('project', 'iteration', 'state', )
-    ordering = ('rank','planned', )
+    list_filter = ('project', 'iteration', 'state',)
+    ordering = ('rank', 'planned',)
     search_fields = ['name', 'description']
 
     fieldsets = ((None, {'fields': ('name', 'description',
                                    ('project', 'iteration'),
-                                   ('rank', 'state', 'planned', ))}), )
+                                   ('rank', 'state', 'planned',))}),)
 
 class TaskAdmin(admin.ModelAdmin):
     inlines = [ImpedimentInLine]
-    list_display = ('name', 'estimate', 'actuals', 'remaining', 
+    list_display = ('name', 'estimate', 'actuals', 'remaining',
                     'state', 'category', 'owner', 'user_story')
     list_display_links = ('name', 'owner', 'user_story')
     fieldsets = ((None, { 'fields': ('name', 'description', 'user_story',
@@ -74,7 +74,7 @@ class TestCaseAdmin(admin.ModelAdmin):
                 }),
                 ('Advanced', {
                 'classes': 'collapse',
-                'fields': ('priority', 'precondition', 'steps', 
+                'fields': ('priority', 'precondition', 'steps',
                             'postcondition',),
                 }),
                 )

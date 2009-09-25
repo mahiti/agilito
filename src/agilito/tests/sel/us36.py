@@ -16,7 +16,7 @@ class TestUS36(TestUS49Base):
 #         print '*'*100
         for field in UserStory._meta.fields:
             if field.name != 'id' and field.name != 'name':
-                self.assert_(self.browser.get_text("id="+field.name))
+                self.assert_(self.browser.get_text("id=" + field.name))
 
     def test_tc38_tr15_some_fields_are_repeated(self):
         for field in UserStory._meta.fields:

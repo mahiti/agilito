@@ -4,7 +4,7 @@ from agilito.models import User
 
 
 class TestUS320(TestUS49Base):
-    
+
     def test_simple_password_change(self):
         """
         Just checks if I really if I can change the user password
@@ -20,7 +20,7 @@ class TestUS320(TestUS49Base):
         for i in xrange(20):
             b.wait()
 
-        self.assertEqual(BASE_URL+'accounts/changepassword/done/', b.get_location())
-        self.assert_(User.objects.get(username='User A').check_password('bye'))
+        self.assertEqual(BASE_URL + 'accounts/changepassword/done/', b.get_location())
+        self.assert_(User.objects.get(username = 'User A').check_password('bye'))
 
-    
+

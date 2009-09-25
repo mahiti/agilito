@@ -17,7 +17,7 @@ def suite():
     for module in ttw, unit:
         suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(module))
     for module in doc, :
-        suite.addTest(doctest.DocTestSuite(module, 
-                                           checker=doctestOutputChecker,
-                                           runner=DocTestRunner))
+        suite.addTest(doctest.DocTestSuite(module,
+                                           checker = doctestOutputChecker,
+                                           runner = DocTestRunner))
     return suite
