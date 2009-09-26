@@ -3,21 +3,21 @@
 
 {% block title %}
 {% if current_iteration %}
-{{current_iteration.name}} Hours
+{{current_iteration.name}} {% trans 'Hours' %}
 {% else %}
-There are no iterations in this project.
+{% trans 'There are no iterations in this project' %}.
 {% endif %}
 {% endblock %}
 
 {% block main_nav %}
 <ul id="main_nav">
-    <li><a href="{% url agilito.views.backlog current_project.id %}">Backlog</a></li>
+    <li><a href="{% url agilito.views.backlog current_project.id %}">{% trans 'Backlog' %}</a></li>
     {% if current_project.iteration_set.all %}
-    <li><a href="{% url agilito.views.iteration_status current_project.id %}">Iteration</a></li>
+    <li><a href="{% url agilito.views.iteration_status current_project.id %}">{% trans 'Iteration' %}</a></li>
     {% endif %}
-    <li><a href="{% url agilito.views.timelog current_project.id %}">Log</a></li>
+    <li><a href="{% url agilito.views.timelog current_project.id %}">{% trans 'Log' %}</a></li>
     {% if current_project.iteration_set.all %}
-    <li class="selected"><a href="{% url agilito.views.iteration_hours current_project.id%}">Hours</a></li>
+    <li class="selected"><a href="{% url agilito.views.iteration_hours current_project.id%}">{% trans 'Hours' %}</a></li>
     {% endif %}
     <div class="visualClear"></div>
 </ul>
@@ -64,27 +64,27 @@ There are no iterations in this project.
     <div class="visualClear"></div>
 </div>
 <div id="us-resume">
-    <span>Start date: 
+    <span>{% trans 'Start date' %}: 
     <strong>{{current_iteration.start_date|naturalday}}</strong>
     </span> |
-    <span>End date :
+    <span>{% trans 'End date' %}:
     <strong>{{current_iteration.end_date|naturalday}}</strong>
     </span>
 </div>
 
 <div class="hours-resume">
     <dl id="resume">
-        <dt>Plan Estimate:</dt>
+        <dt>{% trans 'Plan Estimate' %}:</dt>
         <dd>{{planned}}</dd>
-        <dt>Accepted:</dt>
+        <dt>{% trans 'Accepted' %}:</dt>
         <dd>{{current_iteration.us_accepted}} ({{current_iteration.us_accepted_percentage|floatformat:0 }} %)</dd>
     </dl>
 </div>
 <div class="hours-resume">
     <dl id="resume">
-        <dt>Task Estimated:</dt> 
+        <dt>{% trans 'Task Estimated' %}:</dt> 
         <dd>{{estimated_total}}</dd>
-        <dt>Actuals:</dt> 
+        <dt>{% trans 'Actuals' %}:</dt> 
         <dd>{{progress_total}}</dd>
     </dl>
 </div>
@@ -95,9 +95,9 @@ There are no iterations in this project.
 <table cellspacing="0" cellpadding="2">
 <thead>
     <tr>
-        <th>Team Status</th>
-        <th>Task Estimates</th>
-        <th>Task Actuals</th>
+        <th>{% trans 'Team Status' %}</th>
+        <th>{% trans 'Task Estimates' %}</th>
+        <th>{% trans 'Task Actuals' %}</th>
     </tr>
 </thead>
 
@@ -117,9 +117,9 @@ There are no iterations in this project.
 </tbody>
 </table>
 
-<a href="{% url agilito.views.hours_export current_project.id,current_iteration.id %}">hours export</a>
+<a href="{% url agilito.views.hours_export current_project.id,current_iteration.id %}">{% trans 'hours export' %}</a>
 {% else%}
-There are no members on this project
+{% trans 'There are no members on this project' %}
 {% endif%}
 
 {% else %}
