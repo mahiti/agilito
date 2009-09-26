@@ -1,9 +1,11 @@
+"""
+ODT labels module
+"""
 #!/usr/bin/python
 
 import ConfigParser
 import os
 import zipfile
-import sys
 import xml.dom.minidom
 import cStringIO
 import types
@@ -11,6 +13,8 @@ import decimal
 import htmllib, formatter
 
 class ODTLabels:
+    """Label representations for ODT format"""
+    
     UNITS = 'in'
     nsStyle = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
     nsFO = 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0'
@@ -20,28 +24,29 @@ class ODTLabels:
     nsTable = "urn:oasis:names:tc:opendocument:xmlns:table:1.0"
     nsOffice = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 
-    def __init__(self, iniFile = __file__.replace('.py', '.ini')):
+    def __init__(self, ini_file = __file__.replace('.py', '.ini')):
         self.labels = ConfigParser.RawConfigParser()
-        if os.path.exists(iniFile): self.labels.read(iniFile)
+        self.papersize = None
+        if os.path.exists(ini_file): self.labels.read(ini_file)
 
-    def setSheetType(self, st):
-        self.st = st
+    def setSheetType(self, sheet_type):
+        self.sheet_type = sheet_type
 
-        for k, v in self.labels.items(st):
-            if k in ['width', 'height', 'left margin', 'top margin', 'vertical pitch', 'horizontal pitch']:
-                v = self.standardSize(v)
-            if k in ['across', 'down']:
-                v = int(v)
-            if k == 'page':
-                k = 'papersize'
-            k = k.replace(' ', '_')
-            setattr(self, k, v)
+        for key, value in self.labels.items(sheet_type):
+            if key in ['width', 'height', 'left margin', 'top margin', 'vertical pitch', 'horizontal pitch']:
+                value = self.standardSize(value)
+            if key in ['across', 'down']:
+                value = int(value)
+            if key == 'page':
+                key = 'papersize'
+            key = key.replace(' ', '_')
+            setattr(self, key, value)
 
-        for k, v in self.labels.items(self.papersize):
-            setattr(self, 'page_' + k, self.sizeStr(self.standardSize(v)))
+        for key, value in self.labels.items(self.papersize):
+            setattr(self, 'page_' + key, self.sizeStr(self.standardSize(value)))
 
     def setTemplate(self, odt):
-        self.srcODT = odt
+        self.src_odt = odt
 
     def toString(self, v):
         tpe = type(v)
@@ -73,7 +78,7 @@ class ODTLabels:
             return unicode(v_a).decode('utf-8')
 
     def makeLabels(self, tasks, stories, output):
-        odtinput = zipfile.ZipFile(self.srcODT)
+        odtinput = zipfile.ZipFile(self.src_odt)
         odtoutput = zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED)
         #odtoutput = file(output, 'w')
 
@@ -84,10 +89,12 @@ class ODTLabels:
                 odtoutput.writestr(dir, '')
             elif name == 'styles.xml':
                 odtoutput.writestr(name, self._setPageSize(odtinput.read(name)))
-                #zipdata.append((None, name, self._setPageSize(odtinput.read(name))))
+                #zipdata.append((None, name, 
+                #self._setPageSize(odtinput.read(name))))
             elif name == 'content.xml':
                 odtoutput.writestr(name, self._makeLabels(odtinput.read(name), tasks, stories))
-                #zipdata.append((None, name, self._makeLabels(odtinput.read(name), tasks, stories)))
+                #zipdata.append((None, name, 
+                #self._makeLabels(odtinput.read(name), tasks, stories)))
             else:
                 odtoutput.writestr(name, odtinput.read(name))
                 #zipdata.append((None, name, odtinput.read(name)))
